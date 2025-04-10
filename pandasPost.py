@@ -50,8 +50,11 @@ while True :
             df["first_name"] = dfSeparatedNames[0]  # First part
             df["last_name"] = dfSeparatedNames[1]   # Second part
             print(df.head())          
+
+            df["category"] = df["product"].map(productCategoriesDict)
+
             
-            df.to_sql('sale', con=engine, if_exists='replace', index=True)
+            #df.to_sql('sale', con=engine, if_exists='replace', index=True)
             print("You've imported the excel file into your postgres database.")
 
         elif options == 2:
