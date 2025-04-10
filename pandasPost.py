@@ -49,6 +49,9 @@ while True :
             dfSeparatedNames = df["name"].str.split("_", expand = True)
             df["first_name"] = dfSeparatedNames[0]  # First part
             df["last_name"] = dfSeparatedNames[1]   # Second part
+            del df["name"]
+            df.insert(1, 'first_name', df.pop('first_name'))  # Move first_name to column B
+            df.insert(2, 'last_name', df.pop('last_name')) 
             print(df.head())          
             
             df.to_sql('sale', con=engine, if_exists='replace', index=True)
