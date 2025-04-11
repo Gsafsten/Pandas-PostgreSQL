@@ -1,13 +1,16 @@
 """
 Garrett Safsten, Jack Mair, Tanner Crookston, Ryan Baldwin
-Description: 
+Description: This code reads an excel file of data and puts it into a database in pgadmin. The user can input data and then select data that the user would like to
+summarize with a pop-up chart. The user can continue to add data or summarize data until another valiue except 1 or 2 is entered.
 """
+# Imported libraries
 import sqlalchemy as sq # Does same as psycopg2 except it helps when working with pandas.
 from sqlalchemy import create_engine, text
 import pandas as pd
 import psycopg2 # We can work with sql.
 import matplotlib.pyplot as plot
 
+# Dictionary with the correct key and value which is used to replace all the incorrect values in the category column.
 productCategoriesDict = {
         'Camera': 'Technology',
         'Laptop': 'Technology',
@@ -31,37 +34,37 @@ productCategoriesDict = {
         'Charger': 'Technology'}
 
 
-while True :
-    try:
-        options = int(input("If you want to import data, enter 1. If you want to see summaries of stored data, enter 2. Enter any other value to exit the program: "))
-        if options == 1:
+while True : # This loop encompasses all the code and will keep running until user exits the code. 
+        options = (input("If you want to import data, enter 1. If you want to see summaries of stored data, enter 2. Enter any other value to exit the program: ")) # The menu that user can choose from and type their selection.
+        # This if statement allows the user to choose 1, 2, or any other number to exit.
+        if options == '1': 
             file_path = "Retail_Sales_Data.xlsx"
 
             df = pd.read_excel(file_path) # df stands for dataframe
-
+            #Necessary info to access the table in postgres.
             username = 'postgres'
             password = '123456'
             host = 'localhost'
             port = '5432'
             database = 'is303'
-
+            # This line of code connects python to postgres.
             engine =  create_engine(f'postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}') # This connects python to postgres sql 
             dfSeparatedNames = df["name"].str.split("_", expand = True)
             df["first_name"] = dfSeparatedNames[0]  # First part
             df["last_name"] = dfSeparatedNames[1]   # Second part
             del df["name"]
             df.insert(1, 'first_name', df.pop('first_name'))  # Move first_name to column B
-            df.insert(2, 'last_name', df.pop('last_name')) 
-            print(df.head())          
+            df.insert(2, 'last_name', df.pop('last_name')) # Move last_name to column C          
 
             
-            df["category"] = df["product"].map(productCategoriesDict)
+            df["category"] = df["product"].map(productCategoriesDict) # Replaces each value in the category column with the correct value according to the product key in the dictionary.
 
             
-            df.to_sql('sale', con=engine, if_exists='replace', index=True)
-            print("You've imported the excel file into your postgres database.")
+            df.to_sql('sale', con=engine, if_exists='replace', index=True) # This sends everything we are doing from python to postgres.
+            print("You've imported the excel file into your postgres database.") # Notifying the user of the completed action.
+            continue
 
-        elif options == 2:
+        elif options == '2':
             # 1. Print intro message
             print("The following are all the categories that have been sold:")
 
@@ -111,9 +114,10 @@ while True :
                 plot.xticks(rotation=45)
                 plot.tight_layout()
                 plot.show()
-        else:
+                continue
+
+        else: # Ends the program and exits the loop
             print("Exiting Program. Goodbye.")
-            break
+            break 
     
-    except ValueError:
-        print("Please enter a whole integer (ex. '1')")
+   
