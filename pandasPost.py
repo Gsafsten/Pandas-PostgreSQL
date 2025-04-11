@@ -54,10 +54,11 @@ while True :
             df.insert(2, 'last_name', df.pop('last_name')) 
             print(df.head())          
 
+            
             df["category"] = df["product"].map(productCategoriesDict)
 
             
-            #df.to_sql('sale', con=engine, if_exists='replace', index=True)
+            df.to_sql('sale', con=engine, if_exists='replace', index=True)
             print("You've imported the excel file into your postgres database.")
 
         elif options == 2:
